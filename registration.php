@@ -39,39 +39,48 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     if (empty($errors)) {
-        // Другие проверки и валидация данных...
-    
+       
         $role = $_POST['role'];
-    
+
         // Добавление пользователя в базу данных с указанием выбранной роли
         $sql = "INSERT INTO User (name, surname, email, role_id) VALUES ('$nameValue', '$surnameValue', '$emailValue', '$role')";
-    
+
         // Подключение к базе данных
         $conn = new mysqli($servername, $username, $password, $dbname);
         if ($conn->connect_error) {
             die("Connection failed: " . $conn->connect_error);
         }
-    
+
         // Проверяем, нет ли уже пользователя с таким email
         $email_check_sql = "SELECT * FROM User WHERE email = '$emailValue'";
         $email_result = $conn->query($email_check_sql);
         if ($email_result->num_rows > 0) {
             $errors['email'][] = 'Пользователь с таким email уже существует!';
         } else {
-            // Добавляем пользователя в базу данных
-            if ($conn->query($sql) === TRUE) {
-                // Устанавливаем HTTP-код 201 (Created)
-                http_response_code(201);
-                echo "Регистрация прошла успешно!";
-                echo "<br/>"."<a href='events.php'> --> Посмотреть доступные мероприятия </a>";
-                // Устанавливаем сессию, указывая, что пользователь зарегистрирован
-                $_SESSION['registered'] = true;
-                // Перенаправляем пользователя на страницу "events.php"
-                header('Location: events.php');
-                exit(); // Завершаем выполнение скрипта после перенаправления
-            } else {
-                echo "Ошибка: " . $sql . "<br>" . $conn->error;
-            }
+
+      // Добавляем пользователя в базу данных
+if ($conn->query($sql) === TRUE) {
+    // Получаем идентификатор только что добавленного пользователя
+    $user_id = $conn->insert_id;
+
+    // Устанавливаем HTTP-код 201 (Created)
+    http_response_code(201);
+    echo "Регистрация прошла успешно!";
+    
+    echo "<br/>" . "<a href='events.php'> --> Посмотреть доступные мероприятия </a>";
+    // Устанавливаем сессию, указывая, что пользователь зарегистрирован
+    $_SESSION['registered'] = true;
+
+    // Сохраняем user_id в сессию или переменную
+    $_SESSION['user_id'] = $user_id;
+
+    // Перенаправляем пользователя на страницу "events.php"
+    header('Location: events.php');
+    exit(); // Завершаем выполнение скрипта после перенаправления
+} else {
+    echo "Ошибка: " . $sql . "<br>" . $conn->error;
+}
+
         }
         $conn->close();
     }
@@ -158,8 +167,10 @@ function sanitizeData(string $data): string
                         </div>
                     <?php endif; ?>
                 </div>
+                <br>
+                <button class="w-100 btn btn-lg btn-primary mb-3" type="submit">Зарегистрироваться</button>
+                <a href="./autorization.php" class="w-100 btn btn-lg btn-primary">Авторизироваться</a>
 
-                <button class="w-100 btn btn-lg btn-primary" type="submit">Зарегистрироваться</button>
             </form>
         </main>
     </div>
