@@ -1,0 +1,20 @@
+/** стили для регистрации **/
+/** стили для регистрации **/
+body {
+    font-family: Arial, sans-serif;
+    padding: 7% 30% ;
+    background-color: #f4f4f4;
+}
+
+
+
+.container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}

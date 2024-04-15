@@ -101,7 +101,7 @@ if (isset($_GET['event_id'])) {
         <html lang="en">
         <head>
             <meta charset="UTF-8">
-            <link rel="stylesheet" href="styles.css">
+            <link rel="stylesheet" href="stile1.css">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Регистрация на мероприятие</title>
         </head>
@@ -115,6 +115,8 @@ if (isset($_GET['event_id'])) {
                 <input type="number" id="seats" name="seats" min="1" max="<?php echo $event_seats; ?>" required><br>
                 <input type="submit" value="Зарегистрироваться">
             </form>
+            <Br><br>
+            <a href="events.php"class="btm"> Вернуться к мероприятиям </a>
         </body>
         </html>
         <?php

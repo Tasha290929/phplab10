@@ -1,15 +1,17 @@
 body {
     font-family: Arial, sans-serif;
-
     background-color: #f4f4f4;
     padding: 20px;
-    margin-left: 20px;
+    margin-left: 20px; /* Добавляем отступ слева */
 }
 
 .container {
     width: 80%;
     margin: 0 auto;
     padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
@@ -17,34 +19,12 @@ h1 {
     color: #333;
 }
 
-.events {
-    margin-top: 20px;
-}
-
-.event {
-    background-color: #fff;
-    border-radius: 5px;
-    padding: 20px;
-    margin-bottom: 20px;
-}
-
-.event h2 {
-    color: #333;
-}
-
-.event p {
+p {
     color: #666;
-    margin-bottom: 10px;
 }
 
-
-
-
-
-
-
-.form-group {
-    margin-bottom: 20px;
+form {
+    margin-top: 20px;
 }
 
 label {
@@ -53,15 +33,16 @@ label {
     color: #333;
 }
 
-input[type="text"] {
-    width: 100%;
+input[type="number"] {
+    width: 20%;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
     box-sizing: border-box;
+    margin-bottom: 10px;
 }
 
-button {
+input[type="submit"] {
     padding: 10px 20px;
     background-color: #4CAF50;
     color: white;
@@ -70,13 +51,13 @@ button {
     cursor: pointer;
 }
 
-button:hover {
+input[type="submit"]:hover {
     background-color: #45a049;
 }
 
-
 .btm {
-    padding: 10px 20px;
+   
+    padding: 10px 20px; 
     background-color: #4CAF50;
     color: white;
     border: none;
@@ -88,4 +69,3 @@ button:hover {
 .btm:hover {
     background-color: #45a049;
 }
-
