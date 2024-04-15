@@ -1,102 +1,131 @@
 <?php
-// Проверка авторизации пользователя
 session_start();
-if (!isset($_SESSION['user_id']) || $_SESSION['user_id'] !== 'manager') {
-    header("Location: login.php"); // Перенаправление на страницу авторизации
-    exit;
+
+$dbname = "event_platform"; // Имя вашей базы данных
+require_once('./include/db.php');
+
+if (!isset($_SESSION['authenticated']) && $_SESSION['role_id'] == 2) {
+
+    header('Location: registration.php');
+    exit(); // Завершаем выполнение скрипта после перенаправления
 }
 
-// Подключение к базе данных
-include_once 'db_connect.php'; // Файл с настройками подключения к БД
+// Если пользователь нажимает на кнопку выхода, завершаем текущую сессию
+if (isset($_POST['logout'])) {
+    session_unset(); // Удаляем все переменные сессии
+    session_destroy(); // Разрушаем сессию
+    header('Location: registration.php'); // Перенаправляем пользователя на страницу авторизации или регистрации
+    exit(); // Завершаем выполнение скрипта после перенаправления
+}
 
-// Добавление мероприятия
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_event'])) {
+// Обработка добавления мероприятия
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'add_event') {
     $name = $_POST['name'];
+    $price = $_POST['price'];
+    $number_seats = $_POST['number_seats'];
     $date = $_POST['date'];
-    $description = $_POST['description'];
-    
-    // SQL запрос для добавления мероприятия в базу данных
-    $sql = "INSERT INTO events (name, date, description) VALUES ('$name', '$date', '$description')";
-    
+
+    // Валидация и обработка данных (можно добавить дополнительные проверки)
+
+    // SQL-запрос для добавления мероприятия в базу данных
+    $sql = "INSERT INTO events (name, price, number_seats, date) VALUES ('$name', '$price', '$number_seats', '$date')";
+
     if ($conn->query($sql) === TRUE) {
         echo "Мероприятие успешно добавлено";
     } else {
-        echo "Ошибка: " . $sql . "<br>" . $conn->error;
+        echo "Ошибка при добавлении мероприятия: " . $conn->error;
     }
 }
 
-// Изменение мероприятия
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_event'])) {
+// Обработка удаления мероприятия
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_event'])) {
     $event_id = $_POST['event_id'];
-    $name = $_POST['name'];
-    $date = $_POST['date'];
-    $description = $_POST['description'];
-    
-    // SQL запрос для изменения мероприятия в базе данных
-    $sql = "UPDATE events SET name='$name', date='$date', description='$description' WHERE id=$event_id";
-    
+
+    // SQL-запрос для удаления мероприятия из базы данных
+    $sql = "DELETE FROM events WHERE id = $event_id";
+
     if ($conn->query($sql) === TRUE) {
-        echo "Мероприятие успешно обновлено";
+        echo "Мероприятие успешно удалено";
     } else {
-        echo "Ошибка: " . $sql . "<br>" . $conn->error;
+        echo "Ошибка при удалении мероприятия: " . $conn->error;
     }
 }
-
-// Получение списка мероприятий
-$sql_events = "SELECT * FROM events";
-$result_events = $conn->query($sql_events);
-
-// Получение списка зарегистрированных пользователей на мероприятия
-$sql_registrations = "SELECT * FROM registrations";
-$result_registrations = $conn->query($sql_registrations);
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Административная панель</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
-    <h1>Добавить мероприятие</h1>
-    <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-        Название: <input type="text" name="name"><br>
-        Дата: <input type="date" name="date"><br>
-        Описание: <textarea name="description"></textarea><br>
-        <input type="submit" name="add_event" value="Добавить">
-    </form>
-    
-    <h1>Изменить мероприятие</h1>
-    <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-        Выберите мероприятие:
-        <select name="event_id">
+    <div class="container">
+        <h1>Административная панель</h1>
+
+        <!-- Форма для добавления мероприятия -->
+        <h2>Добавить мероприятие</h2>
+        <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+            <div>
+                <label for="name">Название мероприятия:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div>
+                <label for="price">Цена:</label>
+                <input type="number" id="price" name="price" required>
+            </div>
+            <div>
+                <label for="number_seats">Количество мест:</label>
+                <input type="number" id="number_seats" name="number_seats" required>
+            </div>
+            <div>
+                <label for="date">Дата и время:</label>
+                <input type="datetime-local" id="date" name="date" required>
+            </div>
+            <input type="hidden" name="action" value="add_event">
+            <button type="submit">Добавить</button>
+        </form>
+
+        <!-- Таблица для отображения списка мероприятий -->
+        <h2>Список мероприятий</h2>
+        <table>
+            <tr>
+                <th>Название</th>
+                <th>Цена</th>
+                <th>Количество мест</th>
+                <th>Дата и время</th>
+                <th>Действия</th>
+            </tr>
             <?php
-            if ($result_events->num_rows > 0) {
-                while($row = $result_events->fetch_assoc()) {
-                    echo "<option value='" . $row["id"] . "'>" . $row["name"] . "</option>";
+            // SQL-запрос для получения списка мероприятий
+            $sql = "SELECT * FROM events";
+            $result = $conn->query($sql);
+
+            if ($result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+                    echo "<tr>";
+                    echo "<td>" . $row['name'] . "</td>";
+                    echo "<td>$" . $row['price'] . "</td>";
+                    echo "<td>" . $row['number_seats'] . "</td>";
+                    echo "<td>" . $row['date'] . "</td>";
+                    echo "<td><form action='" . $_SERVER['PHP_SELF'] . "' method='post'>";
+                    echo "<input type='hidden' name='event_id' value='" . $row['id'] . "'>";
+                    echo "<button type='submit' name='delete_event'>Удалить</button>";
+                    echo "</form></td>";
+                    echo "</tr>";
                 }
+            } else {
+                echo "<tr><td colspan='5'>Нет мероприятий</td></tr>";
             }
             ?>
-        </select><br>
-        Название: <input type="text" name="name"><br>
-        Дата: <input type="date" name="date"><br>
-        Описание: <textarea name="description"></textarea><br>
-        <input type="submit" name="update_event" value="Изменить">
+        </table>
+    </div>
+    <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="post">
+        <button type="submit" name="logout">Выход</button>
     </form>
-    
-    <h1>Зарегистрированные на мероприятия</h1>
-    <table border="1">
-        <tr>
-            <th>Имя</th>
-            <th>Мероприятие</th>
-        </tr>
-        <?php
-        if ($result_registrations->num_rows > 0) {
-            while($row = $result_registrations->fetch_assoc()) {
-                echo "<tr><td>" . $row["name"] . "</td><td>" . $row["event_name"] . "</td></tr>";
-            }
-        }
-        ?>
-    </table>
 </body>
+
 </html>

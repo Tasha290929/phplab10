@@ -33,14 +33,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($result) {
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
-            // Устанавливаем user_id в сессии
-            $_SESSION['user_id'] = $row['id'];
-            // Авторизация успешна
-            echo "Авторизация успешна! ID пользователя: " . $row['id'];
-            header('Location: events.php');
-            exit();
-        }
-         else {
+            if ($row['role_id'] == 2) {
+                // Если пользователь администратор, перенаправляем его на административную панель
+                $_SESSION['user_role'] == '2';
+                header('Location: admin.php');
+                exit();
+            } else {
+                // Если пользователь не администратор, перенаправляем его на другую страницу
+                $_SESSION['user_role'] == '1';
+                header('Location: events.php');
+                exit();
+            }
+        } else {
             // Неверные данные
             echo "Неверные данные, попробуйте еще раз.";
         }
@@ -48,7 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Ошибка запроса
         echo "Ошибка запроса: " . $conn->error;
     }
-
+    
     // Закрытие соединения с базой данных
     $conn->close();
 }

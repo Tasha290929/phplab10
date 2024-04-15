@@ -3,7 +3,7 @@
 session_start();
 
 // Проверяем, установлена ли сессия авторизации или регистрации
-if (!isset($_SESSION['registered']) && !isset($_SESSION['authenticated'])) {
+if (!isset($_SESSION['registered']) || !isset($_SESSION['authenticated'])) {
     // Если сессия не установлена, перенаправляем пользователя на страницу авторизации или регистрации
     header('Location: registration.php');
     exit(); // Завершаем выполнение скрипта после перенаправления

@@ -5,7 +5,7 @@ session_start();
 $dbname = "event_platform"; // Имя вашей базы данных
 require_once('./include/db.php');
 
-if (!isset($_SESSION['registered']) && !isset($_SESSION['authenticated'])) {
+if (!isset($_SESSION['registered']) ||  !isset($_SESSION['authenticated'])) {
     // Если сессия не установлена, перенаправляем пользователя на страницу авторизации или регистрации
     header('Location: registration.php');
     exit(); // Завершаем выполнение скрипта после перенаправления
