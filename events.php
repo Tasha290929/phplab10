@@ -3,10 +3,10 @@
 session_start();
 
 // Проверяем, установлена ли сессия авторизации или регистрации
-if (!isset($_SESSION['registered']) || !isset($_SESSION['authenticated'])) {
-    // Если сессия не установлена, перенаправляем пользователя на страницу авторизации или регистрации
-    header('Location: registration.php');
-    exit(); // Завершаем выполнение скрипта после перенаправления
+if (!isset($_SESSION['authenticated'])) {
+    echo "Authenticated: " . $_SESSION['authenticated'] . "<br>";
+    echo "Role ID: " . $_SESSION['role_id'] . "<br>";
+    exit();
 }
 
 // Если пользователь нажимает на кнопку выхода, завершаем текущую сессию

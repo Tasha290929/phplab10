@@ -33,17 +33,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($result) {
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
+            $_SESSION['authenticated'] = true;
             if ($row['role_id'] == 2) {
-                // Если пользователь администратор, перенаправляем его на административную панель
-                $_SESSION['user_role'] == '2';
+                $_SESSION['user_role'] = '2';
+                $_SESSION['role_id'] = 2; // Установите значение роли пользователя
                 header('Location: admin.php');
                 exit();
             } else {
-                // Если пользователь не администратор, перенаправляем его на другую страницу
-                $_SESSION['user_role'] == '1';
+                $_SESSION['user_role'] = '1';
+                $_SESSION['role_id'] = 1; // Установите значение роли пользователя
                 header('Location: events.php');
                 exit();
             }
+            
         } else {
             // Неверные данные
             echo "Неверные данные, попробуйте еще раз.";

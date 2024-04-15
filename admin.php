@@ -4,11 +4,13 @@ session_start();
 $dbname = "event_platform"; // Имя вашей базы данных
 require_once('./include/db.php');
 
-if (!isset($_SESSION['authenticated']) && $_SESSION['role_id'] == 2) {
-
-    header('Location: registration.php');
-    exit(); // Завершаем выполнение скрипта после перенаправления
+if (!isset($_SESSION['authenticated']) || $_SESSION['role_id'] !== 2) {
+    echo "Authenticated: " . $_SESSION['authenticated'] . "<br>";
+    echo "Role ID: " . $_SESSION['role_id'] . "<br>";
+    exit(); // Завершаем выполнение скрипта после вывода данных для отладки
 }
+
+
 
 // Если пользователь нажимает на кнопку выхода, завершаем текущую сессию
 if (isset($_POST['logout'])) {

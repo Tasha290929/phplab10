@@ -69,7 +69,7 @@ if ($conn->query($sql) === TRUE) {
     
     echo "<br/>" . "<a href='events.php'> --> Посмотреть доступные мероприятия </a>";
     // Устанавливаем сессию, указывая, что пользователь зарегистрирован
-    $_SESSION['registered'] = true;
+    $_SESSION['authenticated'] = true;
 
     // Сохраняем user_id в сессию или переменную
     $_SESSION['user_id'] = $user_id;
